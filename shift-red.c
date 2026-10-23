@@ -9,13 +9,10 @@ void display(char action[])
 {
     int i;
 
-    printf("%-20s %-20s %-25s\n", "", "", "");
-
     for(i = 0; i <= top; i++)
         printf("%c", stack[i]);
 
-    printf("%*s", 20 - top - 1, "");
-    printf("%-20s %-25s\n", input + ip, action);
+    printf("\t%s\t%s\n", input + ip, action);
 }
 
 int reduce()
@@ -78,13 +75,11 @@ int reduce()
 int main()
 {
     printf("Enter expression (use i for identifier): ");
-    scanf("%99s", input);
+    scanf("%s", input);
 
     strcat(input, "$");
 
-    printf("\n%-20s %-20s %-25s\n",
-           "Stack", "Input", "Action");
-
+    printf("\nStack\tInput\tAction\n");
     display("Start");
 
     while(1)
