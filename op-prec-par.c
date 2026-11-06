@@ -33,14 +33,14 @@ int findex(char c)
     return -1;
 }
 
-void display()
+void display(const char *action)
 {
     int i;
 
     for(i = 0; i <= top; i++)
         printf("%c", stack[i]);
 
-    printf("\t\t%s\n", input + ip);
+    printf("\t\t%s\t\t%s\n", input + ip, action);
 }
 
 int reduce()
@@ -91,7 +91,7 @@ int main()
 
     stack[++top] = '$';
 
-    printf("\nSTACK\t\tINPUT\n");
+    printf("\nSTACK\t\tINPUT\t\tACTION\n");
 
     while(1)
     {
@@ -106,6 +106,7 @@ int main()
         if(top == 1 && stack[0] == '$' &&
            stack[1] == 'E' && b == '$')
         {
+            display("Accept");
             printf("\nAccepted\n");
             break;
         }
@@ -122,7 +123,9 @@ int main()
             stack[++top] = b;
             ip++;
 
-            display();
+            char action[20];
+            sprintf(action, "Shift %c", b);
+            display(action);
         }
         else if(table[findex(a)][findex(b)] == '>')
         {
@@ -132,7 +135,7 @@ int main()
                 break;
             }
 
-            display();
+            display("Reduce");
         }
         else
         {

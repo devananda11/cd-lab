@@ -1,150 +1,109 @@
-#include <stdio.h>
-#include <string.h>
 
-#define MAX 20
+#include <stdio.h>
 
 int n, m;
-char states[MAX];
-char symbols[MAX];
-int trans[MAX][MAX][MAX];      
-int dfa[MAX][MAX];             
-char dfaStates[MAX][MAX];      
-int dfaCount = 0;
+int nfa[20][20][20], count[20][20];
+int dfa[100][20], states[100][20];
+int d = 0;
 
-int exists(char set[])
+int exists(int a[])
 {
-    for(int i=0;i<dfaCount;i++)
+    for(int i = 0; i < d; i++)
     {
-        if(strcmp(dfaStates[i], set)==0)
+        int same = 1;
+
+        for(int j = 0; j < n; j++)
+            if(states[i][j] != a[j])
+                same = 0;
+
+        if(same)
             return i;
     }
+
     return -1;
-}
-
-void sortSet(char s[])
-{
-    int len=strlen(s);
-
-    for(int i=0;i<len-1;i++)
-        for(int j=i+1;j<len;j++)
-            if(s[i]>s[j])
-            {
-                char t=s[i];
-                s[i]=s[j];
-                s[j]=t;
-            }
 }
 
 int main()
 {
     printf("Enter number of states: ");
-    scanf("%d",&n);
-
-    printf("Enter states:\n");
-    for(int i=0;i<n;i++)
-        scanf(" %c",&states[i]);
+    scanf("%d", &n);
 
     printf("Enter number of symbols: ");
-    scanf("%d",&m);
+    scanf("%d", &m);
 
-    printf("Enter symbols:\n");
-    for(int i=0;i<m;i++)
-        scanf(" %c",&symbols[i]);
-
-    int t;
-    printf("Enter number of transitions: ");
-    scanf("%d",&t);
-
-    memset(trans,0,sizeof(trans));
-
-    printf("Enter transitions (From Symbol To):\n");
-
-    for(int i=0;i<t;i++)
+    for(int i = 0; i < n; i++)
     {
-        char from,to,sym;
-        scanf(" %c %c %c",&from,&sym,&to);
-
-        int f=-1,toIdx=-1,s=-1;
-
-        for(int j=0;j<n;j++)
+        for(int j = 0; j < m; j++)
         {
-            if(states[j]==from) f=j;
-            if(states[j]==to) toIdx=j;
+            printf("Number of transitions from q%d on symbol %d: ", i, j);
+            scanf("%d", &count[i][j]);
+
+            printf("Enter next states: ");
+
+            for(int k = 0; k < count[i][j]; k++)
+            {
+                int x;
+                scanf("%d", &x);
+                nfa[i][j][k] = x;
+            }
         }
-
-        for(int j=0;j<m;j++)
-            if(symbols[j]==sym)
-                s=j;
-
-        trans[f][s][toIdx]=1;
     }
 
-    strcpy(dfaStates[0],"A");
-    dfaCount=1;
+    states[0][0] = 1;
+    d = 1;
 
-    for(int curr=0;curr<dfaCount;curr++)
+    for(int i = 0; i < d; i++)
     {
-        for(int sym=0;sym<m;sym++)
+        for(int j = 0; j < m; j++)
         {
-            char newSet[MAX]="";
+            int temp[20] = {0};
 
-            for(int k=0;k<strlen(dfaStates[curr]);k++)
+            for(int k = 0; k < n; k++)
             {
-                char st=dfaStates[curr][k];
-
-                int idx=-1;
-
-                for(int x=0;x<n;x++)
-                    if(states[x]==st)
-                        idx=x;
-
-                for(int y=0;y<n;y++)
+                if(states[i][k] == 1)
                 {
-                    if(trans[idx][sym][y])
+                    for(int l = 0; l < count[k][j]; l++)
                     {
-                        if(strchr(newSet,states[y])==NULL)
-                        {
-                            int len=strlen(newSet);
-                            newSet[len]=states[y];
-                            newSet[len+1]='\0';
-                        }
+                        int x = nfa[k][j][l];
+                        temp[x] = 1;
                     }
                 }
             }
 
-            sortSet(newSet);
+            int pos = exists(temp);
 
-            if(strlen(newSet)==0)
-                strcpy(newSet,"-");
-
-            int pos=exists(newSet);
-
-            if(pos==-1)
+            if(pos == -1)
             {
-                strcpy(dfaStates[dfaCount],newSet);
-                pos=dfaCount;
-                dfaCount++;
+                for(int k = 0; k < n; k++)
+                    states[d][k] = temp[k];
+
+                pos = d;
+                d++;
             }
 
-            dfa[curr][sym]=pos;
+            dfa[i][j] = pos;
         }
     }
 
-    printf("\nEquivalent DFA Transition Table\n\n");
+    printf("\nDFA Transition Table\n");
 
     printf("State\t");
-
-    for(int i=0;i<m;i++)
-        printf("%c\t",symbols[i]);
-
+    for(int i = 0; i < m; i++)
+        printf("%d\t", i);
     printf("\n");
 
-    for(int i=0;i<dfaCount;i++)
+    for(int i = 0; i < d; i++)
     {
-        printf("%s\t",dfaStates[i]);
+        printf("{");
 
-        for(int j=0;j<m;j++)
-            printf("%s\t",dfaStates[dfa[i][j]]);
+        for(int j = 0; j < n; j++)
+            if(states[i][j])
+                printf("q%d ", j);
+
+        printf("}\t");
+
+        for(int j = 0; j < m; j++)
+            printf("%d\t", dfa[i][j]);
 
         printf("\n");
     }

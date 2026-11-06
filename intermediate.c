@@ -6,6 +6,17 @@ char stack[100][20];
 int top = -1;
 int tempCount = 1;
 
+struct Quadruple
+{
+    char op[5];
+    char arg1[20];
+    char arg2[20];
+    char result[20];
+};
+
+struct Quadruple quad[100];
+int quadCount = 0;
+
 void push(char *str)
 {
     strcpy(stack[++top], str);
@@ -100,7 +111,14 @@ void generateTAC(char postfix[])
             printf("%s = %s %c %s\n",
                    result, op1, ch, op2);
 
-            strcpy(localStack[++top], result);
+            quad[quadCount].op[0] = ch;
+            quad[quadCount].op[1] = '\0';
+
+            strcpy(quad[quadCount].arg1, op1);
+            strcpy(quad[quadCount].arg2, op2);
+            strcpy(quad[quadCount].result, result);
+
+            quadCount++;
         }
     }
 }
@@ -119,6 +137,19 @@ int main()
 
     printf("\nThree Address Code:\n");
     generateTAC(postfix);
+
+    printf("\nQuadruples:\n");
+    printf("No.\tOp\tArg1\tArg2\tResult\n");
+
+    for (int i = 0; i < quadCount; i++)
+    {
+        printf("%d\t%s\t%s\t%s\t%s\n",
+               i,
+               quad[i].op,
+               quad[i].arg1,
+               quad[i].arg2,
+               quad[i].result);
+    }
 
     return 0;
 }

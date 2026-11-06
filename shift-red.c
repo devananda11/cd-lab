@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 
@@ -80,6 +79,7 @@ int main()
     strcat(input, "$");
 
     printf("\nStack\tInput\tAction\n");
+    stack[++top] = '$';
     display("Start");
 
     while(1)
@@ -92,7 +92,11 @@ int main()
 
         while(reduce());
 
-        if(input[ip] == '$' && top == 0 && stack[top] == 'E')
+
+        if(input[ip] == '$' &&
+           top == 1 &&
+           stack[0] == '$' &&
+           stack[1] == 'E')
         {
             display("Accept");
             break;
