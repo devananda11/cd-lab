@@ -1,18 +1,38 @@
 %{
-#include<stdio.h>
-#include<stdlib.h>
-void yyerror(char *s);
-int yylex();
+#include <stdio.h>
+#include <stdlib.h>
+
+int yylex(void);
+void yyerror(const char *s);
 %}
-%token ID
+
+%token LETTER DIGIT NL
+
 %%
-S : ID '\n' { printf("Valid Variable\n"); };
+start : var NL
+        {
+            printf("Valid variable\n");
+            exit(0);
+        }
+      ;
+
+var : LETTER rest
+    ;
+
+rest : LETTER rest
+     | DIGIT rest
+     |
+     ;
 %%
-void yyerror(char *s)
+
+void yyerror(const char *s)
 {
-printf("Invalid Variable\n");
+    printf("Invalid variable\n");
 }
+
 int main()
 {
-yyparse();
+    printf("Enter a variable: ");
+    yyparse();
+    return 0;
 }

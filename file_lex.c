@@ -25,7 +25,7 @@ int main()
         return 1;
     }
 
-    while (i < (int)sizeof(str) - 1 && (ch = fgetc(input)) != EOF)
+    while ((ch = fgetc(input)) != EOF)
         str[i++] = (char)ch;
     fclose(input);
     str[i]='\0';

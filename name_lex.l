@@ -1,17 +1,21 @@
+
 %{
-#include<stdio.h>
+#include <stdio.h>
 %}
+
 %%
-.*ABCD.* { printf("Rejected\n"); }
-.* { printf("Accepted\n"); }
+.*[Dd][Ee][Vv][Aa].*    { printf("Rejected\n"); }
+.*                      { printf("Accepted\n"); }
 %%
+
 int yywrap()
 {
-return 1;
+    return 1;
 }
+
 int main()
 {
-printf("Enter String:\n");
-yylex();
-return 0;
+    printf("Enter a string:\n");
+    yylex();
+    return 0;
 }

@@ -1,25 +1,64 @@
+
 %{
 #include <stdio.h>
-#include <stdlib.h>
-int yylex();
-void yyerror(char *);
-
+int yylex(void);
+void yyerror(char *s);
 %}
-%token FOR ID NUM
+
+%token FOR ID NUM LE GE EQ NE INC DEC
+
 %%
-stmt : FOR '(' ID '=' NUM ';'
-ID '<' NUM ';'
-ID '+' '+'
-')'
-{
-printf("Valid FOR Statement\n");
-};
+stmt:
+    FOR '(' init ';' cond ';' upd ')'
+    {
+        printf("Valid FOR statement\n");
+        return 0;
+    }
+    ;
+
+init:
+    ID '=' expr
+    ;
+
+cond:
+    expr relop expr
+    ;
+
+relop:
+    '<'
+    | '>'
+    | LE
+    | GE
+    | EQ
+    | NE
+    ;
+
+upd:
+    ID INC
+    | ID DEC
+    | ID '=' expr
+    ;
+
+expr:
+    expr '+' term
+    | expr '-' term
+    | term
+    ;
+
+term:
+    ID
+    | NUM
+    ;
 %%
+
 void yyerror(char *s)
 {
-printf("Invalid FOR Statement\n");
+    printf("Invalid FOR statement\n");
 }
+
 int main()
 {
-yyparse();
+    printf("Enter FOR statement: ");
+    yyparse();
+    return 0;
 }

@@ -1,21 +1,40 @@
-%{
-    #include<stdio.h>
-    #include<stdlib.h>
-    int yylex();
-    void yyerror(char *s);
 
+%{
+#include <stdio.h>
+
+int yylex();
+int yyerror(char *s);
 %}
-%token NUM
+
+%token NUMBER
+
+%left '+' '-'
+%left '*' '/'
+
 %%
-line:exp'\n'{printf("Result=%d\n",$1);};
-exp:exp'+'exp{$$=$1+$3;}
-| exp'-'exp{$$=$1-$3;}
-| exp'*'exp{$$=$1*$3;}
-| exp'/'exp{$$=$1/$3;}
-| NUM {$$=$1;}
-;
+input:
+    expression '\n' { printf("Result = %d\n", $1); }
+    ;
+
+expression:
+      expression '+' expression { $$ = $1 + $3; }
+    | expression '-' expression { $$ = $1 - $3; }
+    | expression '*' expression { $$ = $1 * $3; }
+    | expression '/' expression { $$ = $1 / $3; }
+    | '(' expression ')'       { $$ = $2; }
+    | NUMBER                   { $$ = $1; }
+    ;
 %%
-void yyerror(char *s){}
-int main(){
+
+int main()
+{
+    printf("Enter an expression: ");
     yyparse();
+    return 0;
+}
+
+int yyerror(char *s)
+{
+    printf("Invalid expression\n");
+    return 0;
 }
